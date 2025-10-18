@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TGRM Coding-Speed Simulator — Dark</title>
+  <link rel="stylesheet" href="style_dark.css" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .lanes{border:1px dashed #2a374b;border-radius:10px;padding:10px;margin-top:10px}
+    .lane{position:relative;height:16px;background:#0e141d;border-radius:999px;margin:8px 0;overflow:hidden}
+    .lane .dot{position:absolute;top:0;left:0;width:16px;height:16px;border-radius:50%;background:#39b8ff}
+    .lane.tgrm .dot{background:#32d0a0}
+    .legend{display:flex;gap:14px;align-items:center}
+    .box{width:10px;height:10px;border-radius:2px;display:inline-block}
+    .b1{background:#39b8ff}.b2{background:#32d0a0}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>TGRM Sim — Dark Mode</h1>
+    <p class="small">Adaptive micro-repairs (τ) for coding-speed gains. This page mirrors your main demo with a dark presentation.</p>
+  </header>
+
+  <main>
+    <p><span id="gainBadge" class="gain-badge">Gain: —%</span></p>
+
+    <section class="lanes">
+      <div class="legend">
+        <span class="box b1"></span> Baseline lane
+        <span class="box b2"></span> TGRM lane
+      </div>
+      <div id="laneA" class="lane base"><span class="dot"></span></div>
+      <div id="laneB" class="lane tgrm"><span class="dot"></span></div>
+      <p class="small">The TGRM lane should usually reach the finish sooner at good τ / error settings.</p>
+    </section>
+
+    <hr/>
+    <!-- Reuse your existing interactive layout from index.html by loading it inside an iframe -->
+    <iframe src="index.html" title="TGRM interactive" style="width:100%;height:1200px;border:1px solid #1f2b3a;border-radius:10px"></iframe>
+  </main>
+
+  <script src="sim_viz.js"></script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+
+// Add right after you compute 'out' inside run() in sim.js:
+const event = new CustomEvent('tgrm:afterRun', {detail:{gain: o.gain, baseX: o.baseX, tgrmX: o.tgrmX}});
+window.dispatchEvent(event);
