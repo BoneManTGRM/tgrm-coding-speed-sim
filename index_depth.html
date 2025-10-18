@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TGRM DepthPlus — Context-Depth Repair Curve (1K–8K)</title>
+
+  <!-- Optional (if you already have these): -->
+  <link rel="stylesheet" href="style_dark.css">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+         margin:0;padding:20px;background:#0b0e13;color:#e7f4ef}
+    h1{margin:0 0 6px;color:#39b8ff}
+    p.small{color:#9fb6ad;margin:0 0 16px}
+    .wrap{max-width:980px;margin:0 auto}
+    .card{border:1px solid #1f2b3a;border-radius:10px;padding:14px;background:#121722}
+    .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 18px}
+    a.btn{border:1px solid #39b8ff;color:#39b8ff;text-decoration:none;
+          padding:8px 12px;border-radius:8px}
+    canvas{max-width:100%;background:#0e141d;border:1px solid #1f2b3a;border-radius:8px}
+    pre{white-space:pre-wrap;color:#00ffaa;background:transparent}
+    footer{margin-top:26px;color:#9fb6ad;font-size:.9rem}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>🧩 TGRM DepthPlus</h1>
+      <p class="small">Context-depth repair efficiency curve (1K → 8K). τ = 0.9, fix=5, micro=1.
+        Error rises mildly with depth: <code>err = 0.1 + 0.05·log₁₀(depth/1K)</code>.
+      </p>
+      <div class="btnrow">
+        <a class="btn" href="index_pro.html">Open Live Simulator</a>
+        <a class="btn" href="index.html">Classic View</a>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2 style="margin:0 0 10px">Neon Gain Curve (1K–8K)</h2>
+      <canvas id="depthplusCanvas" width="920" height="300" aria-label="DepthPlus Gain Curve"></canvas>
+      <pre id="depthplusTable"></pre>
+    </section>
+
+    <footer>
+      Reparodynamics — Open Science Proof-of-Repair • DOI:
+      <a href="https://doi.org/10.5281/zenodo.17336075" target="_blank" style="color:#39b8ff">10.5281/zenodo.17336075</a>
+    </footer>
+  </div>
+
+  <!-- DepthPlus Neon Chart (no extra files needed) -->
+  <script>
+  function std_pipeline_depthplus(n=1000, err=0.2, cost=5){
+    let total=0; for(let i=0;i<n;i++) if(Math.random()<err) total+=cost; return total;
+  }
+  function tgrm_pipeline_depthplus(n=1000, err=0.2, cost=5, micro=1, tau=0.9){
+    let total=0; for(let i=0;i<n;i++) if(Math.random()<err) total += (Math.random()<tau ? micro : cost); return total;
+  }
+  function runDepthPlus(){ // returns [{window,gain}]
+    const windows=[1000,2000,3000,4000,5000,6000,7000,8000], out=[];
+    for(const w of windows){
+      const err = 0.1 + 0.05 * Math.log10(w/1000);    // mild sub-log error rise
+      const std = std_pipeline_depthplus(w, err, 5);
+      const tgrm= tgrm_pipeline_depthplus(w, err, 5, 1, 0.9);
+      const gain=((std-tgrm)/std)*100;
+      out.push({window:w, gain:+gain.toFixed(1)});
+    }
+    return out;
+  }
+
+  (function(){
+    const results = runDepthPlus();
+
+    // Table
+    const tbl = document.getElementById('depthplusTable');
+    tbl.textContent = JSON.stringify(results, null, 2);
+
+    // Chart
+    const cv = document.getElementById('depthplusCanvas');
+    const ctx = cv.getContext('2d');
+    const W=cv.width, H=cv.height, L=50, R=14, T=18, B=32;
+
+    const xs = results.map(r=>r.window);
+    const ys = results.map(r=>r.gain);
+    const xMin=Math.min(...xs), xMax=Math.max(...xs);
+    const yMin=0, yMax=Math.max(80, Math.ceil(Math.max(...ys)/10)*10);
+
+    const x2 = px => L + ((px - xMin) / (xMax - xMin)) * (W - L - R);
+    const y2 = py => (H - B) - ((py - yMin) / (yMax - yMin)) * (H - T - B);
+
+    // Axes
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='#44596d'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(L,H-B); ctx.lineTo(W-R,H-B); ctx.lineTo(W-R,T); ctx.stroke();
+
+    // Grid + labels
+    ctx.fillStyle='#9fb6ad'; ctx.font='12px system-ui';
+    for(const x of xs){
+      const X=x2(x);
+      ctx.strokeStyle='#1f2b3a';
+      ctx.beginPath(); ctx.moveTo(X,H-B); ctx.lineTo(X,T); ctx.stroke();
+      ctx.fillText((x/1000)+'K', X-8, H-10);
+    }
+    for(const g of [0,20,40,60,80]){
+      const Y=y2(g);
+      ctx.strokeStyle='#1f2b3a';
+      ctx.beginPath(); ctx.moveTo(L,Y); ctx.lineTo(W-R,Y); ctx.stroke();
+      ctx.fillText(g+'%', 8, Y+4);
+    }
+
+    // Plateau band 70–75%
+    const bandTop=y2(75), bandBot=y2(70);
+    ctx.fillStyle='rgba(50,208,160,0.08)';
+    ctx.fillRect(L, bandTop, (W-L-R), (bandBot-bandTop));
+
+    // Neon gradient line
+    const grad = ctx.createLinearGradient(L,0,W-R,0);
+    grad.addColorStop(0,'#32d0a0'); grad.addColorStop(1,'#39b8ff');
+    ctx.lineWidth=2.25; ctx.strokeStyle=grad;
+    ctx.beginPath();
+    results.forEach((r,i)=>{ const X=x2(r.window), Y=y2(r.gain); i?ctx.lineTo(X,Y):ctx.moveTo(X,Y); });
+    ctx.stroke();
+
+    // Nodes
+    results.forEach(r=>{
+      const X=x2(r.window), Y=y2(r.gain);
+      ctx.fillStyle='#39b8ff';
+      ctx.beginPath(); ctx.arc(X,Y,3,0,Math.PI*2); ctx.fill();
+    });
+  })();
+  </script>
+</body>
+</html>
