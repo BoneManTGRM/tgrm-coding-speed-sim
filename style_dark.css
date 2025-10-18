@@ -1,0 +1,48 @@
+/* style_dark.css — Dark theme for TGRM demo */
+:root{
+  --bg:#0b0e13;
+  --panel:#121722;
+  --ink:#e7f4ef;
+  --muted:#9fb6ad;
+  --accent:#32d0a0;   /* neon green */
+  --accent2:#39b8ff;  /* cyan */
+  --border:#1f2b3a;
+}
+
+@media (prefers-color-scheme: dark){
+  body{background:var(--bg);color:var(--ink);margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--accent2)}
+  header, .card, details{background:var(--panel);border-color:var(--border)}
+  header{padding:20px}
+  .meter{background:#0e141d}
+  .bar1{background:#44596d}
+  .bar2{background:var(--accent)}
+  input[type=range]{accent-color:var(--accent2)}
+  canvas{background:#0e141d;border:1px solid var(--border);border-radius:8px}
+  hr{border:0;border-top:1px solid var(--border)}
+}
+
+/* Pulse animation for the live speed gain badge */
+.gain-badge{
+  display:inline-block;padding:.25rem .55rem;border-radius:999px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  color:#001;font-weight:700;letter-spacing:.2px;
+  animation:pulse 1.8s infinite ease-in-out;
+}
+@keyframes pulse{
+  0%{filter:saturate(1);transform:scale(1)}
+  50%{filter:saturate(1.4);transform:scale(1.03)}
+  100%{filter:saturate(1);transform:scale(1)}
+}
+
+/* Simple layout helpers to match your current page */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.card{border:1px solid var(--border);border-radius:10px;padding:12px;background:var(--panel)}
+.row{display:flex;align-items:center;gap:8px}
+input[type=range]{width:100%}
+.btn{display:inline-block;border:1px solid var(--accent);padding:8px 14px;border-radius:8px;cursor:pointer;background:transparent;color:var(--ink)}
+.meter{height:20px;border-radius:999px;background:#0e141d;position:relative;overflow:hidden}
+.meter>span{display:block;height:100%;width:0}
+.bar1{background:#44596d}
+.bar2{background:var(--accent)}
+.small{color:var(--muted);font-size:.9rem}
