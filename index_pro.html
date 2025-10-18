@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TGRM AutoViz PRO — Coding Speed Simulator</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style_dark.css">
+
+  <style>
+    body { font-family: system-ui, sans-serif; padding: 20px; color: #e7f4ef; background-color: #0b0e13; }
+    h1 { color: #39b8ff; text-align: center; }
+    .gain-badge {
+      display:inline-block;padding:.4rem .8rem;border-radius:999px;
+      background:linear-gradient(90deg,#32d0a0,#39b8ff);
+      color:#001;font-weight:700;letter-spacing:.2px;
+      animation:pulse 1.8s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0%{filter:saturate(1);transform:scale(1)}
+      50%{filter:saturate(1.4);transform:scale(1.03)}
+      100%{filter:saturate(1);transform:scale(1)}
+    }
+    .grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px; }
+    .card { border:1px solid #1f2b3a;border-radius:10px;padding:12px;background:#121722; }
+    input[type=range]{width:100%;accent-color:#39b8ff;}
+    .meter{height:20px;border-radius:999px;background:#0e141d;overflow:hidden;}
+    .meter>span{display:block;height:100%;width:0;}
+    .bar1{background:#44596d;}
+    .bar2{background:#32d0a0;}
+    .small{color:#9fb6ad;font-size:.9rem;}
+    .lanes{border:1px dashed #2a374b;border-radius:10px;padding:10px;margin-top:10px}
+    .lane{position:relative;height:16px;background:#0e141d;border-radius:999px;margin:8px 0;overflow:hidden}
+    .lane .dot{position:absolute;top:0;left:0;width:16px;height:16px;border-radius:50%;background:#39b8ff}
+    .lane.tgrm .dot{background:#32d0a0}
+    .legend{display:flex;gap:14px;align-items:center}
+    .box{width:10px;height:10px;border-radius:2px;display:inline-block}
+    .b1{background:#39b8ff}.b2{background:#32d0a0}
+    hr{border-color:#1f2b3a;margin:20px 0;}
+    footer{margin-top:30px;text-align:center;color:#9fb6ad;font-size:.85rem;}
+    button.toggle {
+      border:1px solid #39b8ff;background:none;color:#39b8ff;
+      border-radius:6px;padding:6px 12px;cursor:pointer;margin-bottom:10px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>⚙️ TGRM AutoViz PRO Simulator</h1>
+  <p style="text-align:center">Adaptive micro-repairs (τ ≈ 0.6) improving simulated coding throughput.</p>
+
+  <div style="text-align:center;margin-top:10px;">
+    <span id="gainBadge" class="gain-badge">Gain: —%</span>
+  </div>
+
+  <section class="lanes">
+    <div class="legend">
+      <span class="box b1"></span> Baseline lane
+      <span class="box b2"></span> TGRM lane
+    </div>
+    <div id="laneA" class="lane base"><span class="dot"></span></div>
+    <div id="laneB" class="lane tgrm"><span class="dot"></span></div>
+    <p class="small">The TGRM lane reaches the finish faster at efficient τ/error values.</p>
+  </section>
+
+  <hr>
+
+  <div class="grid">
+    <div class="card">
+      <label>Iterations (n): <span id="nOut">1000</span></label>
+      <input id="n" type="range" min="100" max="5000" step="100" value="1000">
+
+      <label>Error Rate: <span id="errOut">0.2</span></label>
+      <input id="err" type="range" min="0.05" max="0.5" step="0.01" value="0.2">
+
+      <label>Tau Threshold (τ): <span id="tauOut">0.6</span></label>
+      <input id="tau" type="range" min="0.1" max="0.9" step="0.05" value="0.6">
+
+      <label>Fix Cost: <span id="fixOut">5</span></label>
+      <input id="fix" type="range" min="1" max="10" step="1" value="5">
+
+      <label>Micro-repair Cost: <span id="mcOut">1</span></label>
+      <input id="mc" type="range" min="0.5" max="5" step="0.5" value="1">
+
+      <button id="runBtn" class="toggle">Run Simulation</button>
+    </div>
+
+    <div class="card">
+      <h3>Results</h3>
+      <div id="result">—</div>
+      <p class="small">Higher τ efficiency → greater stability / lower energy waste.</p>
+
+      <div class="meter"><span id="baseBar" class="bar1"></span></div>
+      <div class="meter"><span id="tgrmBar" class="bar2"></span></div>
+
+      <p>Baseline throughput: <b id="baseX">—</b></p>
+      <p>TGRM throughput: <b id="tgrmX">—</b></p>
+
+      <canvas id="chart" width="320" height="200"></canvas>
+    </div>
+  </div>
+
+  <footer>
+    <p>Reparodynamics: Open Science Proof-of-Repair<br>
+    Cody R. Jenkins — DOI: <a href="https://doi.org/10.5281/zenodo.17336075" target="_blank">10.5281/zenodo.17336075</a></p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="tgrm_autoviz_pro.js" defer></script>
+  <script src="sim_viz.js?v=3" defer></script>
+</body>
+</html>
