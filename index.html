@@ -1,62 +1,51 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>TGRM Coding-Speed Simulator — Reparodynamics</title>
   <link rel="stylesheet" href="style.css" />
-  <script defer src="sim.js"></script>
+  <meta name="description" content="Interactive simulator showing TGRM's coding-speed gain via adaptive micro-repairs (τ).">
 </head>
-
 <body>
-  <main>
+  <header>
     <h1>TGRM Sim Demo — Reparodynamics</h1>
-    <p>
-      Open-science replication of adaptive micro-repairs (τ) applied to code pipelines.  
-      Demonstrates how Reparodynamics and Targeted Gradient Repair Mechanisms (TGRM)  
-      improve both efficiency and coding speed by reducing full repair cycles.
-    </p>
-
-    <h2>Interactive Simulator</h2>
-    <div id="controls">
-      <label>Steps (n): <input id="steps" type="range" min="100" max="5000" value="1000" /></label>
-      <label>Error probability: <input id="err" type="range" min="0.01" max="0.5" step="0.01" value="0.2" /></label>
-      <label>Adaptive threshold (τ): <input id="tau" type="range" min="0.1" max="0.9" step="0.01" value="0.6" /></label>
-      <label>Full repair cost: <input id="fix_cost" type="range" min="1" max="10" step="1" value="5" /></label>
-      <label>Micro-repair cost: <input id="m_cost" type="range" min="0.1" max="5" step="0.1" value="1" /></label>
-      <button id="run">Run simulation</button>
-    </div>
-
-    <p id="results">Std: —, TGRM: —, Gain: —</p>
-
-    <section id="coding-speed">
-      <h2>⏱️ Coding-Speed Gain Interpretation</h2>
-      <p>
-        Each “repair event” represents a code correction or pipeline adjustment.  
-        The <strong>TGRM adaptive repair</strong> system performs small, targeted micro-repairs  
-        instead of full rewrites — reducing average correction cost per cycle.
-      </p>
-      <ul>
-        <li><strong>Baseline pipeline:</strong> 1.0× throughput (constant full repair cost)</li>
-        <li><strong>TGRM pipeline:</strong> ~1.9× throughput (adaptive micro-repairs)</li>
-      </ul>
-      <p>
-        This yields an observed <strong>+40–50% gain in coding throughput</strong> under moderate error rates  
-        (τ ≈ 0.6). The model demonstrates how Reparodynamics accelerates complex systems  
-        — from software compilation to AI retraining — by minimizing total repair energy and time.
-      </p>
+    <p>Open-science replication of adaptive micro-repairs (τ) for coding-speed gains.</p>
+  </header>
+  <main>
+    <section>
+      <h2>Interactive simulator</h2>
+      <div class="grid">
+        <div><label>Steps (n): <span id="nOut">1000</span></label><input type="range" id="n" min="200" max="5000" step="100" value="1000"></div>
+        <div><label>Error probability: <span id="errOut">0.20</span></label><input type="range" id="err" min="0" max="0.6" step="0.01" value="0.20"></div>
+        <div><label>Adaptive threshold (τ): <span id="tauOut">0.60</span></label><input type="range" id="tau" min="0" max="1" step="0.01" value="0.60"></div>
+        <div><label>Full repair cost: <span id="fixOut">5</span></label><input type="range" id="fix" min="2" max="10" step="1" value="5"></div>
+        <div><label>Micro-repair cost: <span id="mcOut">1</span></label><input type="range" id="mc" min="1" max="4" step="1" value="1"></div>
+      </div>
+      <button id="runBtn">Run simulation</button>
+      <p id="result">Std: —, TGRM: —, Gain: —%</p>
     </section>
-
-    <section id="chart">
-      <canvas id="gainChart"></canvas>
+    <section>
+      <h2>⚡ Speed Meter</h2>
+      <div class="meter"><span class="bar1" id="baseBar"></span></div>
+      <div class="meter"><span class="bar2" id="tgrmBar"></span></div>
+      <p><strong>Baseline:</strong> <span id="baseX">1.00×</span> | <strong>TGRM:</strong> <span id="tgrmX">1.00×</span></p>
     </section>
-
-    <h2>Study & Provenance</h2>
-    <p>
-      Zenodo study: <a href="https://doi.org/10.5281/zenodo.17336075" target="_blank">DOI 10.5281/zenodo.17336075</a><br>
-      Author: Cody R. Jenkins — Open Science Reparodynamics Initiative<br>
-      License: MIT (code), CC BY 4.0 (docs)
-    </p>
+    <section>
+      <h2>📈 Gain vs τ (dynamic)</h2>
+      <canvas id="chart" width="800" height="280"></canvas>
+    </section>
+    <section>
+      <h2>🧠 Explain like Grok</h2>
+      <details>
+        <summary>Why does τ ≈ 0.6 give ~40–50% gain?</summary>
+        <p>When τ is too low, few micro-repairs trigger → you mostly pay full cost. When τ is too high, you over-apply micro-repairs, reducing efficiency. The sweet spot (τ≈0.5–0.7) balances both.</p>
+      </details>
+    </section>
   </main>
+  <footer>
+    <p>© 2025 Reparodynamics — Open science demo.</p>
+  </footer>
+  <script src="sim.js"></script>
 </body>
 </html>
